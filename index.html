@@ -37,9 +37,36 @@
 
     <label for="frecuencia">Frecuencia (MHz):</label>
     <select id="frecuencia">
-      <option value="900">900</option>
-      <option value="1800">1800</option>
-      <option value="2400">2400</option>
+<option value="200">200</option>
+<option value="400">400</option>
+<option value="600">600</option>
+<option value="800">800</option>
+<option value="1000">1000</option>
+<option value="1200">1200</option>
+<option value="1400">1400</option>
+<option value="1600">1600</option>
+<option value="1800">1800</option>
+<option value="2000">2000</option>
+<option value="2200">2200</option>
+<option value="2400">2400</option>
+<option value="2600">2600</option>
+<option value="2800">2800</option>
+<option value="3000">3000</option>
+<option value="3200">3200</option>
+<option value="3400">3400</option>
+<option value="3600">3600</option>
+<option value="3800">3800</option>
+<option value="4000">4000</option>
+<option value="4200">4200</option>
+<option value="4400">4400</option>
+<option value="4600">4600</option>
+<option value="4800">4800</option>
+<option value="5000">5000</option>
+<option value="5200">5200</option>
+<option value="5400">5400</option>
+<option value="5600">5600</option>
+<option value="5800">5800</option>
+<option value="6000">6000</option>
     </select>
 
     <button id="btnMostrar">Mostrar Patrón</button>
@@ -47,7 +74,7 @@
 
   <a-scene embedded arjs>
     <a-marker preset="hiro">
-      <a-entity id="modelo3d" position="0 0 0" rotation="0 0 0" scale="1 1 1" visible="false"></a-entity>
+      <!-- El modelo 3D será insertado aquí -->
     </a-marker>
     <a-entity camera></a-entity>
   </a-scene>
@@ -58,9 +85,20 @@
       const frecuencia = document.getElementById("frecuencia").value;
       const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
 
-      const entidad = document.getElementById("modelo3d");
-      entidad.setAttribute("gltf-model", ruta);
-      entidad.setAttribute("visible", "true");
+      const marcador = document.querySelector("a-marker");
+      let viejoModelo = document.querySelector("#modelo3d");
+      if (viejoModelo) {
+        marcador.removeChild(viejoModelo);
+      }
+
+      const nuevoModelo = document.createElement("a-entity");
+      nuevoModelo.setAttribute("id", "modelo3d");
+      nuevoModelo.setAttribute("gltf-model", ruta);
+      nuevoModelo.setAttribute("position", "0 0 0");
+      nuevoModelo.setAttribute("rotation", "0 0 0");
+      nuevoModelo.setAttribute("scale", "1 1 1");
+
+      marcador.appendChild(nuevoModelo);
     };
   </script>
 </body>
