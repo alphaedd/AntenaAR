@@ -37,7 +37,6 @@
 
     <label for="frecuencia">Frecuencia (MHz):</label>
     <select id="frecuencia">
-      <!-- Puedes generar estas opciones automáticamente con Python si lo deseas -->
       <option value="900">900</option>
       <option value="1800">1800</option>
       <option value="2400">2400</option>
@@ -48,7 +47,7 @@
 
   <a-scene embedded arjs>
     <a-marker preset="hiro">
-      <a-entity id="modelo3d" scale="1 1 1" visible="false"></a-entity>
+      <a-entity id="modelo3d" position="0 0 0" rotation="0 0 0" scale="1 1 1" visible="false"></a-entity>
     </a-marker>
     <a-entity camera></a-entity>
   </a-scene>
