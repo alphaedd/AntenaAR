@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Antenas AR</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+    <style>
+      #btn { position: absolute; top: 20px; left: 20px; z-index: 5; background: white; padding: 10px; }
+    </style>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <button id="btn">Mostrar Patrón</button>
+
+    <a-scene embedded arjs>
+      <a-assets>
+        <a-asset-item id="modelo" src=""></a-asset-item>
+      </a-assets>
+
+      <a-marker preset="hiro">
+        <a-entity id="antena3D" gltf-model="#modelo" scale="1 1 1" visible="false"></a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      function getParams() {
+        const url = new URL(window.location.href);
+        const tipo = url.searchParams.get("tipo") || "dipolo";
+        const freq = url.searchParams.get("frecuencia") || "900";
+        return { tipo, freq };
+      }
+
+      const { tipo, freq } = getParams();
+      const modeloPath = `modelos/modelo_${tipo}_${freq}MHz.glb`;
+      document.querySelector('#modelo').setAttribute('src', modeloPath);
+
+      document.getElementById("btn").onclick = () => {
+        document.querySelector("#antena3D").setAttribute("visible", true);
+      };
+    </script>
+  </body>
+</html>
