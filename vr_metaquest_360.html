@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <title>Antenas VR - Meta Quest 2 Interactivo</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.controls.min.js"></script>
+  <script src="https://unpkg.com/aframe-look-at-component@0.8.0/dist/aframe-look-at-component.min.js"></script>
   <style>
-    body { margin: 0; }
+    body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #menu {
       position: absolute;
       top: 20px;
@@ -20,15 +22,6 @@
       margin-top: 5px;
       padding: 6px;
       width: 100%;
-    }
-    .graficas {
-      margin-top: 10px;
-    }
-    .graficas img {
-      width: 100%;
-      margin-bottom: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
     }
   </style>
 </head>
@@ -46,59 +39,23 @@
     <label for="frecuencia">Frecuencia (MHz):</label>
     <select id="frecuencia">
       <option value="200">200</option>
-      <option value="400">400</option>
-      <option value="600">600</option>
-      <option value="800">800</option>
-      <option value="1000">1000</option>
-      <option value="1200">1200</option>
-      <option value="1400">1400</option>
-      <option value="1600">1600</option>
-      <option value="1800">1800</option>
-      <option value="2000">2000</option>
-      <option value="2200">2200</option>
-      <option value="2400">2400</option>
-      <option value="2600">2600</option>
-      <option value="2800">2800</option>
-      <option value="3000">3000</option>
-      <option value="3200">3200</option>
-      <option value="3400">3400</option>
-      <option value="3600">3600</option>
-      <option value="3800">3800</option>
-      <option value="4000">4000</option>
-      <option value="4200">4200</option>
-      <option value="4400">4400</option>
-      <option value="4600">4600</option>
-      <option value="4800">4800</option>
-      <option value="5000">5000</option>
-      <option value="5200">5200</option>
-      <option value="5400">5400</option>
-      <option value="5600">5600</option>
-      <option value="5800">5800</option>
       <option value="6000">6000</option>
     </select><br>
     <button onclick="mostrarModelo()">Mostrar Modelo</button>
-
-    <div class="graficas">
-      <img id="imgXY" src="" alt="Plano XY (Azimuth)">
-      <img id="imgXZ" src="" alt="Plano XZ (Plano E)">
-      <img id="imgYZ" src="" alt="Plano YZ (Plano H)">
-    </div>
   </div>
 
-  <a-scene background="color: #001a33">
-    <a-assets>
-      <img id="sky" src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg">
-    </a-assets>
+  <a-scene vr-mode-ui="enabled: true" renderer="colorManagement: true; alpha: true" embedded>
+    <a-assets></a-assets>
 
-    <a-sky src="#sky" rotation="0 -130 0"></a-sky>
+    <a-entity id="modeloContainer" rotation-listener scale-controller></a-entity>
 
-    <a-entity id="modeloContainer"></a-entity>
+    <a-entity id="graficaXY" geometry="primitive: plane; height: 1; width: 1" position="-1 2 -2" material="src: #imgXY" look-at="#camera"></a-entity>
+    <a-entity id="graficaXZ" geometry="primitive: plane; height: 1; width: 1" position="0 2 -2" material="src: #imgXZ" look-at="#camera"></a-entity>
+    <a-entity id="graficaYZ" geometry="primitive: plane; height: 1; width: 1" position="1 2 -2" material="src: #imgYZ" look-at="#camera"></a-entity>
 
-    <a-entity id="rig" movement-controls position="0 1.6 0">
-      <a-entity camera look-controls wasd-controls="acceleration: 30"></a-entity>
+    <a-entity id="rig" movement-controls="fly: true" position="0 1.6 0">
+      <a-entity id="camera" camera look-controls wasd-controls="acceleration: 30"></a-entity>
     </a-entity>
-
-    <a-plane rotation="-90 0 0" width="20" height="20" color="#444" shadow></a-plane>
   </a-scene>
 
   <script>
@@ -117,12 +74,57 @@
       modelo.setAttribute("position", "0 1.5 -3");
       modelo.setAttribute("scale", "1 1 1");
       modelo.setAttribute("shadow", "cast: true");
+      modelo.setAttribute("id", "modeloInteractivo");
+      modelo.setAttribute("rotation", "0 0 0");
+      modelo.setAttribute("rotation-listener", "");
+      modelo.setAttribute("scale-controller", "");
       container.appendChild(modelo);
 
-      document.getElementById("imgXY").src = rutaXY;
-      document.getElementById("imgXZ").src = rutaXZ;
-      document.getElementById("imgYZ").src = rutaYZ;
+      document.querySelector("#graficaXY").setAttribute("material", "src", rutaXY);
+      document.querySelector("#graficaXZ").setAttribute("material", "src", rutaXZ);
+      document.querySelector("#graficaYZ").setAttribute("material", "src", rutaYZ);
     }
+  </script>
+
+  <script>
+    AFRAME.registerComponent('rotation-listener', {
+      tick: function () {
+        const el = this.el;
+        const gamepads = navigator.getGamepads();
+        if (gamepads[0]) {
+          const xAxis = gamepads[0].axes[2];
+          if (Math.abs(xAxis) > 0.1) {
+            const rot = el.getAttribute('rotation');
+            rot.y += xAxis * 2;
+            el.setAttribute('rotation', rot);
+          }
+        }
+      }
+    });
+
+    AFRAME.registerComponent('scale-controller', {
+      tick: function () {
+        const el = this.el;
+        const gamepads = navigator.getGamepads();
+        if (gamepads[0]) {
+          const trigger = gamepads[0].buttons[0].value;
+          const grip = gamepads[0].buttons[1].value;
+          const scale = el.getAttribute('scale');
+
+          if (trigger > 0.1) {
+            scale.x += 0.01;
+            scale.y += 0.01;
+            scale.z += 0.01;
+            el.setAttribute('scale', scale);
+          } else if (grip > 0.1) {
+            scale.x = Math.max(0.1, scale.x - 0.01);
+            scale.y = Math.max(0.1, scale.y - 0.01);
+            scale.z = Math.max(0.1, scale.z - 0.01);
+            el.setAttribute('scale', scale);
+          }
+        }
+      }
+    });
   </script>
 </body>
 </html>
