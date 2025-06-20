@@ -1,183 +1,56 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Visor AR de Antenas</title>
-  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: sans-serif;
-    }
-    body {
-      overflow-y: scroll;
-      overflow-x: hidden;
-    }
-    #menu {
-      position: sticky;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 10px;
-      z-index: 10000;
-      border-bottom: 1px solid #ccc;
-    }
-    select, button {
-      margin-top: 5px;
-      width: 100%;
-      padding: 6px;
-    }
-    .modulo {
-      padding: 10px;
-      max-width: 700px;
-      margin: auto;
-    }
-    .visor-camara {
-      height: 600px;
-      position: relative;
-      margin-top: 10px;
-    }
-    a-scene {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-    }
-    #mensaje-error {
-      color: red;
-      font-weight: bold;
-      margin-top: 10px;
-      display: none;
-    }
-    #cargando-modelo {
-      color: #333;
-      font-weight: bold;
-      text-align: center;
-      padding: 10px;
-      display: none;
-    }
-    .graficas {
-      padding: 20px 10px;
-    }
-    .grafica-item {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      padding: 10px;
-    }
-    .grafica-item h3 {
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      text-align: center;
-    }
-    .grafica-item img {
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <div id="menu" class="modulo">
-    <label for="tipo">Tipo de Antena:</label>
-    <select id="tipo">
-      <option value="dipolo">Dipolo</option>
-      <option value="logaritmica">Logarítmica</option>
-      <option value="microstrip">Microstrip</option>
-      <option value="monopolo">Monopolo</option>
-      <option value="parabolica">Parabólica</option>
-      <option value="yagi">Yagi</option>
-    </select><br>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AR Antena</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+      #ui {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: white;
+        padding: 10px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <select id="tipo">
+        <option value="dipolo">Dipolo</option>
+        <option value="logaritmica">Logarítmica</option>
+      </select>
+      <select id="frecuencia">
+        <option value="200">200</option>
+        <option value="400">400</option>
+      </select>
+      <button onclick="mostrarModelo()">Cargar Modelo</button>
+    </div>
 
-    <label for="frecuencia">Frecuencia (MHz):</label>
-    <select id="frecuencia">
-      <option value="200">200</option>
-      <option value="400">400</option>
-      <option value="600">600</option>
-      <option value="800">800</option>
-      <option value="1000">1000</option>
-      <option value="1200">1200</option>
-      <option value="1400">1400</option>
-      <option value="1600">1600</option>
-      <option value="1800">1800</option>
-      <option value="2000">2000</option>
-      <option value="2200">2200</option>
-      <option value="2400">2400</option>
-      <option value="2600">2600</option>
-      <option value="2800">2800</option>
-      <option value="3000">3000</option>
-      <option value="3200">3200</option>
-      <option value="3400">3400</option>
-      <option value="3600">3600</option>
-      <option value="3800">3800</option>
-      <option value="4000">4000</option>
-      <option value="4200">4200</option>
-      <option value="4400">4400</option>
-      <option value="4600">4600</option>
-      <option value="4800">4800</option>
-      <option value="5000">5000</option>
-      <option value="5200">5200</option>
-      <option value="5400">5400</option>
-      <option value="5600">5600</option>
-      <option value="5800">5800</option>
-      <option value="6000">6000</option>
-    </select><br>
-
-    <button onclick="mostrarModelo()">Mostrar Patrón</button>
-    <div id="mensaje-error">No se pudo cargar el modelo. Verifica que el archivo .glb exista.</div>
-    <div id="cargando-modelo">Cargando modelo 3D...</div>
-  </div>
-
-  <div class="visor-camara">
     <a-scene embedded arjs>
       <a-assets>
         <a-asset-item id="modelo" src=""></a-asset-item>
       </a-assets>
+
       <a-marker preset="hiro">
         <a-entity id="antena3D" gltf-model="#modelo" scale="1 1 1" position="0 0 0" visible="false"></a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
-  </div>
 
-  <div class="modulo graficas">
-    <div class="grafica-item">
-      <h3>Plano XY (Azimuth)</h3>
-      <img id="imgXY" src="" alt="Plano XY (Azimuth)">
-    </div>
-    <div class="grafica-item">
-      <h3>Plano XZ (Plano E)</h3>
-      <img id="imgXZ" src="" alt="Plano XZ (Plano E)">
-    </div>
-    <div class="grafica-item">
-      <h3>Plano YZ (Plano H)</h3>
-      <img id="imgYZ" src="" alt="Plano YZ (Plano H)">
-    </div>
-  </div>
+    <script>
+      function mostrarModelo() {
+        const tipo = document.getElementById("tipo").value;
+        const frecuencia = document.getElementById("frecuencia").value;
+        const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
 
-  <script>
-    function mostrarModelo() {
-      const tipo = document.getElementById("tipo").value;
-      const frecuencia = document.getElementById("frecuencia").value;
-      const rutaModelo = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
-      const rutaXY = `graficas/${tipo}_${frecuencia}MHz_XY.png`;
-      const rutaXZ = `graficas/${tipo}_${frecuencia}MHz_XZ.png`;
-      const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
-
-      console.log("Intentando cargar modelo:", rutaModelo);
-
-      document.querySelector("#modelo").setAttribute("src", rutaModelo);
-      document.querySelector("#antena3D").setAttribute("visible", "true");
-
-      document.getElementById("imgXY").src = rutaXY;
-      document.getElementById("imgXZ").src = rutaXZ;
-      document.getElementById("imgYZ").src = rutaYZ;
-    }
-  </script>
-</body>
+        console.log("Cargando:", ruta);
+        document.querySelector("#modelo").setAttribute("src", ruta);
+        document.querySelector("#antena3D").setAttribute("visible", "true");
+      }
+    </script>
+  </body>
 </html>
