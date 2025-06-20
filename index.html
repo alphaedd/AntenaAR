@@ -125,15 +125,6 @@
     <div id="mensaje-error">No se pudo cargar el modelo. Verifica que el archivo .glb exista.</div>
   </div>
 
-  <div class="visor-camara">
-    <a-scene embedded arjs>
-      <a-marker preset="hiro">
-        <a-entity id="modeloContainer"></a-entity>
-      </a-marker>
-      <a-entity camera></a-entity>
-    </a-scene>
-  </div>
-
   <div class="modulo graficas">
     <div class="grafica-item">
       <h3>Plano XY (Azimuth)</h3>
@@ -149,6 +140,15 @@
     </div>
   </div>
 
+  <div class="visor-camara">
+    <a-scene embedded arjs>
+      <a-marker preset="hiro">
+        <a-entity id="modeloContainer"></a-entity>
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+  </div>
+
   <script>
     function mostrarModelo() {
       const tipo = document.getElementById("tipo").value;
@@ -159,6 +159,10 @@
       const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
 
       console.log("Intentando cargar modelo:", rutaModelo);
+
+      document.getElementById("imgXY").src = rutaXY;
+      document.getElementById("imgXZ").src = rutaXZ;
+      document.getElementById("imgYZ").src = rutaYZ;
 
       const container = document.getElementById("modeloContainer");
       container.innerHTML = "";
@@ -175,10 +179,6 @@
         document.getElementById("mensaje-error").style.display = "none";
       });
       container.appendChild(modelo);
-
-      document.getElementById("imgXY").src = rutaXY;
-      document.getElementById("imgXZ").src = rutaXZ;
-      document.getElementById("imgYZ").src = rutaYZ;
     }
   </script>
 </body>
