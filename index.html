@@ -1,30 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Antenas AR Interactivo</title>
+  <title>Visor AR de Antenas</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
   <style>
-    .ui {
+    body { margin: 0; overflow: hidden; }
+    #menu {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(255,255,255,0.9);
+      background: rgba(255, 255, 255, 0.9);
       padding: 10px;
       border-radius: 8px;
-      z-index: 5;
+      z-index: 9999;
+      max-width: 280px;
     }
     select, button {
       margin-top: 5px;
       width: 100%;
-      padding: 5px;
+      padding: 6px;
+    }
+    .graficas {
+      margin-top: 10px;
+    }
+    .graficas img {
+      width: 100%;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
   </style>
 </head>
-<body style="margin: 0; overflow: hidden;">
-
-  <div class="ui">
+<body>
+  <div id="menu">
     <label for="tipo">Tipo de Antena:</label>
     <select id="tipo">
       <option value="dipolo">Dipolo</option>
@@ -33,73 +43,79 @@
       <option value="monopolo">Monopolo</option>
       <option value="parabolica">Parabólica</option>
       <option value="yagi">Yagi</option>
-    </select>
+    </select><br>
 
     <label for="frecuencia">Frecuencia (MHz):</label>
     <select id="frecuencia">
-<option value="200">200</option>
-<option value="400">400</option>
-<option value="600">600</option>
-<option value="800">800</option>
-<option value="1000">1000</option>
-<option value="1200">1200</option>
-<option value="1400">1400</option>
-<option value="1600">1600</option>
-<option value="1800">1800</option>
-<option value="2000">2000</option>
-<option value="2200">2200</option>
-<option value="2400">2400</option>
-<option value="2600">2600</option>
-<option value="2800">2800</option>
-<option value="3000">3000</option>
-<option value="3200">3200</option>
-<option value="3400">3400</option>
-<option value="3600">3600</option>
-<option value="3800">3800</option>
-<option value="4000">4000</option>
-<option value="4200">4200</option>
-<option value="4400">4400</option>
-<option value="4600">4600</option>
-<option value="4800">4800</option>
-<option value="5000">5000</option>
-<option value="5200">5200</option>
-<option value="5400">5400</option>
-<option value="5600">5600</option>
-<option value="5800">5800</option>
-<option value="6000">6000</option>
-    </select>
+      <option value="200">200</option>
+      <option value="400">400</option>
+      <option value="600">600</option>
+      <option value="800">800</option>
+      <option value="1000">1000</option>
+      <option value="1200">1200</option>
+      <option value="1400">1400</option>
+      <option value="1600">1600</option>
+      <option value="1800">1800</option>
+      <option value="2000">2000</option>
+      <option value="2200">2200</option>
+      <option value="2400">2400</option>
+      <option value="2600">2600</option>
+      <option value="2800">2800</option>
+      <option value="3000">3000</option>
+      <option value="3200">3200</option>
+      <option value="3400">3400</option>
+      <option value="3600">3600</option>
+      <option value="3800">3800</option>
+      <option value="4000">4000</option>
+      <option value="4200">4200</option>
+      <option value="4400">4400</option>
+      <option value="4600">4600</option>
+      <option value="4800">4800</option>
+      <option value="5000">5000</option>
+      <option value="5200">5200</option>
+      <option value="5400">5400</option>
+      <option value="5600">5600</option>
+      <option value="5800">5800</option>
+      <option value="6000">6000</option>
+    </select><br>
 
-    <button id="btnMostrar">Mostrar Patrón</button>
+    <button onclick="mostrarModelo()">Mostrar Patrón</button>
+
+    <div class="graficas">
+      <img id="imgXY" src="" alt="Plano XY (Azimuth)">
+      <img id="imgXZ" src="" alt="Plano XZ (Plano E)">
+      <img id="imgYZ" src="" alt="Plano YZ (Plano H)">
+    </div>
   </div>
 
   <a-scene embedded arjs>
     <a-marker preset="hiro">
-      <!-- Modelo dinámico se insertará aquí -->
+      <a-entity id="modeloContainer"></a-entity>
     </a-marker>
     <a-entity camera></a-entity>
   </a-scene>
 
   <script>
-    document.getElementById("btnMostrar").onclick = () => {
+    function mostrarModelo() {
       const tipo = document.getElementById("tipo").value;
       const frecuencia = document.getElementById("frecuencia").value;
-      const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
+      const rutaModelo = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
+      const rutaXY = `graficas/${tipo}_${frecuencia}MHz_XY.png`;
+      const rutaXZ = `graficas/${tipo}_${frecuencia}MHz_XZ.png`;
+      const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
 
-      const marcador = document.querySelector("a-marker");
-      let viejoModelo = document.querySelector("#modelo3d");
-      if (viejoModelo) {
-        marcador.removeChild(viejoModelo);
-      }
+      const container = document.getElementById("modeloContainer");
+      container.innerHTML = "";
+      const modelo = document.createElement("a-entity");
+      modelo.setAttribute("gltf-model", rutaModelo);
+      modelo.setAttribute("scale", "1 1 1");
+      modelo.setAttribute("position", "0 0 0");
+      container.appendChild(modelo);
 
-      const nuevoModelo = document.createElement("a-entity");
-      nuevoModelo.setAttribute("id", "modelo3d");
-      nuevoModelo.setAttribute("gltf-model", ruta);
-      nuevoModelo.setAttribute("position", "0 0 0");
-      nuevoModelo.setAttribute("rotation", "0 0 0");
-      nuevoModelo.setAttribute("scale", "1 1 1");
-
-      marcador.appendChild(nuevoModelo);
-    };
+      document.getElementById("imgXY").src = rutaXY;
+      document.getElementById("imgXZ").src = rutaXZ;
+      document.getElementById("imgYZ").src = rutaYZ;
+    }
   </script>
 </body>
 </html>
