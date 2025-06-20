@@ -2,15 +2,15 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <title>Antenas AR - Meta Quest 2</title>
+    <title>Antenas VR - Meta Quest 2</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
     <style>
       body {
         margin: 0;
         overflow: hidden;
         font-family: sans-serif;
       }
+
       #menu {
         position: absolute;
         top: 20px;
@@ -20,6 +20,7 @@
         border-radius: 8px;
         z-index: 10;
       }
+
       select,
       button {
         margin-top: 5px;
@@ -41,29 +42,24 @@
       </select>
       <br />
       <label for="frecuencia">Frecuencia (MHz):</label>
-      <select id="frecuencia">
-        <!-- Se agregan frecuencias 200 a 6000 MHz -->
-      </select>
+      <select id="frecuencia"></select>
       <br />
       <button onclick="mostrarModelo()">Mostrar Modelo</button>
     </div>
 
-    <a-scene embedded vr-mode-ui="false" arjs="sourceType: webcam;">
-      <!-- Iluminación para visibilidad del modelo -->
+    <a-scene vr-mode-ui="enabled">
+      <a-entity id="modeloContainer" position="0 1.2 -2" rotar-modelo></a-entity>
+
+      <!-- Iluminación -->
       <a-entity light="type: ambient; color: #ffffff; intensity: 1"></a-entity>
-      <a-entity light="type: directional; color: #ffffff; intensity: 0.5" position="0 2 1"></a-entity>
+      <a-entity light="type: directional; color: #ffffff; intensity: 0.5" position="1 3 1"></a-entity>
 
-      <!-- Marcador HIRO -->
-      <a-marker preset="hiro">
-        <a-entity id="modeloContainer" rotar-modelo></a-entity>
+      <!-- Paneles con gráficas alrededor del modelo -->
+      <a-image id="graficaXY" position="-1.5 1 -2" width="1.5" height="1.5" src=""></a-image>
+      <a-image id="graficaXZ" position="0 0.5 -3" width="1.5" height="1.5" src=""></a-image>
+      <a-image id="graficaYZ" position="1.5 1 -2" width="1.5" height="1.5" src=""></a-image>
 
-        <!-- Gráficas como imágenes flotantes -->
-        <a-image id="graficaXY" position="-1 1 -1.5" width="1" height="1" src=""></a-image>
-        <a-image id="graficaXZ" position="0 1 -2" width="1" height="1" src=""></a-image>
-        <a-image id="graficaYZ" position="1 1 -1.5" width="1" height="1" src=""></a-image>
-      </a-marker>
-
-      <a-entity camera></a-entity>
+      <a-entity camera position="0 1.6 0" look-controls wasd-controls></a-entity>
     </a-scene>
 
     <script>
@@ -80,9 +76,7 @@
 
       function mostrarModelo() {
         const tipo = document.getElementById("tipo").value;
-        const frecuencia = document
-          .getElementById("frecuencia")
-          .value.replace(" MHz", "");
+        const frecuencia = document.getElementById("frecuencia").value;
 
         const rutaModelo = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
         const rutaXY = `graficas/${tipo}_${frecuencia}MHz_XY.png`;
@@ -94,19 +88,16 @@
 
         const modelo = document.createElement("a-entity");
         modelo.setAttribute("gltf-model", rutaModelo);
-        modelo.setAttribute("position", "0 1.5 0");
         modelo.setAttribute("scale", "1 1 1");
         modelo.setAttribute("rotation", "0 0 0");
         modelo.setAttribute("id", "modeloAR");
         contenedor.appendChild(modelo);
 
-        // Actualizar gráficas
         document.getElementById("graficaXY").setAttribute("src", rutaXY);
         document.getElementById("graficaXZ").setAttribute("src", rutaXZ);
         document.getElementById("graficaYZ").setAttribute("src", rutaYZ);
       }
 
-      // Componente para rotar el modelo con control derecho (joystick horizontal)
       AFRAME.registerComponent('rotar-modelo', {
         tick: function () {
           const modelo = document.querySelector('#modeloAR');
