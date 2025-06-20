@@ -34,8 +34,12 @@
       <option value="parabolica">Parabólica</option>
       <option value="yagi">Yagi</option>
     </select><br>
+
     <label for="frecuencia">Frecuencia (MHz):</label>
-    <select id="frecuencia"></select><br>
+    <select id="frecuencia">
+      <!-- Las frecuencias se llenan automáticamente -->
+    </select><br>
+
     <button onclick="mostrarModelo()">Mostrar Modelo</button>
   </div>
 
@@ -45,24 +49,25 @@
     <!-- Contenedor del modelo 3D -->
     <a-entity id="modeloContainer"></a-entity>
 
-    <!-- Gráficas como planos flotantes -->
+    <!-- Imágenes de las gráficas -->
     <a-image id="graficaXY" position="-1 2 -2" width="1.2" height="1.2" src=""></a-image>
     <a-image id="graficaXZ" position="0 2 -2" width="1.2" height="1.2" src=""></a-image>
     <a-image id="graficaYZ" position="1 2 -2" width="1.2" height="1.2" src=""></a-image>
 
-    <!-- Cámara y movimiento -->
-    <a-entity id="cameraRig" position="0 1.6 0">
+    <!-- Cámara con control de movimiento -->
+    <a-entity position="0 1.6 0">
       <a-entity camera look-controls wasd-controls></a-entity>
     </a-entity>
   </a-scene>
 
   <script>
+    // Llenar el menú de frecuencias desde 200 a 6000 MHz en pasos de 200
     document.addEventListener("DOMContentLoaded", function () {
       const select = document.getElementById("frecuencia");
       for (let i = 200; i <= 6000; i += 200) {
         const opt = document.createElement("option");
         opt.value = i;
-        opt.textContent = i;
+        opt.textContent = `${i} MHz`;
         select.appendChild(opt);
       }
     });
@@ -76,20 +81,22 @@
       const rutaXZ = `graficas/${tipo}_${frecuencia}MHz_XZ.png`;
       const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
 
+      // Limpiar el modelo anterior
       const contenedor = document.getElementById("modeloContainer");
       contenedor.innerHTML = "";
 
+      // Crear nuevo modelo
       const modelo = document.createElement("a-entity");
       modelo.setAttribute("gltf-model", rutaModelo);
-      modelo.setAttribute("position", "0 1.5 -3");
+      modelo.setAttribute("position", "0 1.5 -3");  // Más elevado
       modelo.setAttribute("scale", "1 1 1");
       modelo.setAttribute("rotation", "0 0 0");
-
       contenedor.appendChild(modelo);
 
-      document.querySelector("#graficaXY").setAttribute("src", rutaXY);
-      document.querySelector("#graficaXZ").setAttribute("src", rutaXZ);
-      document.querySelector("#graficaYZ").setAttribute("src", rutaYZ);
+      // Establecer imágenes de gráficas
+      document.getElementById("graficaXY").setAttribute("src", rutaXY);
+      document.getElementById("graficaXZ").setAttribute("src", rutaXZ);
+      document.getElementById("graficaYZ").setAttribute("src", rutaYZ);
     }
   </script>
 </body>
