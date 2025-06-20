@@ -6,11 +6,16 @@
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
   <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
   <style>
-    html, body {
+    html {
+      height: 100%;
+    }
+    body {
       margin: 0;
       padding: 0;
-      height: 100%;
-      overflow-y: scroll;
+      height: auto;
+      min-height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
       font-family: sans-serif;
     }
     #menu {
