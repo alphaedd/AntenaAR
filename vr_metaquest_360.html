@@ -51,7 +51,7 @@
     <a-scene embedded vr-mode-ui="false" arjs="sourceType: webcam;">
       <!-- Marcador HIRO -->
       <a-marker preset="hiro">
-        <a-entity id="modeloContainer"></a-entity>
+        <a-entity id="modeloContainer" rotar-modelo></a-entity>
 
         <!-- Gráficas como imágenes flotantes -->
         <a-image id="graficaXY" position="-1 1 -1.5" width="1" height="1" src=""></a-image>
@@ -93,6 +93,7 @@
         modelo.setAttribute("position", "0 1.5 0");
         modelo.setAttribute("scale", "1 1 1");
         modelo.setAttribute("rotation", "0 0 0");
+        modelo.setAttribute("id", "modeloAR");
         contenedor.appendChild(modelo);
 
         // Actualizar gráficas
@@ -100,6 +101,23 @@
         document.getElementById("graficaXZ").setAttribute("src", rutaXZ);
         document.getElementById("graficaYZ").setAttribute("src", rutaYZ);
       }
+
+      // Componente para rotar el modelo con control derecho (joystick horizontal)
+      AFRAME.registerComponent('rotar-modelo', {
+        tick: function () {
+          const modelo = document.querySelector('#modeloAR');
+          if (!modelo) return;
+          const gamepads = navigator.getGamepads();
+          if (gamepads[0]) {
+            const xAxis = gamepads[0].axes[2];
+            if (Math.abs(xAxis) > 0.1) {
+              const rot = modelo.getAttribute('rotation');
+              rot.y += xAxis * 2;
+              modelo.setAttribute('rotation', rot);
+            }
+          }
+        }
+      });
     </script>
   </body>
 </html>
