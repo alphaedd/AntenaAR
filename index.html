@@ -16,19 +16,27 @@
       position: fixed;
       top: 10px;
       left: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      z-index: 10;
-      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px;
+      z-index: 9999;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     }
     select, button {
-      margin: 5px 0;
+      margin-top: 6px;
       width: 100%;
       padding: 6px;
+    }
+    #alerta {
+      color: red;
+      font-weight: bold;
+      display: none;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
+
   <div id="menu">
     <label for="tipo">Tipo de Antena:</label>
     <select id="tipo">
@@ -48,18 +56,10 @@
       <option value="800">800</option>
       <option value="1000">1000</option>
       <option value="1200">1200</option>
-      <option value="1400">1400</option>
-      <option value="1600">1600</option>
-      <option value="1800">1800</option>
-      <option value="2000">2000</option>
-      <option value="2200">2200</option>
-      <option value="2400">2400</option>
-      <option value="2600">2600</option>
-      <option value="2800">2800</option>
-      <option value="3000">3000</option>
     </select>
 
     <button onclick="mostrarModelo()">Mostrar Patrón</button>
+    <div id="alerta">❌ No se pudo cargar el modelo</div>
   </div>
 
   <a-scene embedded arjs>
@@ -75,27 +75,33 @@
       const frecuencia = document.getElementById("frecuencia").value;
       const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
 
-      console.log("Intentando cargar:", ruta);
+      console.log("🔄 Cargando modelo:", ruta);
 
+      // Limpia anterior
       const contenedor = document.getElementById("modeloContainer");
       contenedor.innerHTML = "";
 
+      // Crea nuevo modelo
       const modelo = document.createElement("a-entity");
       modelo.setAttribute("gltf-model", ruta);
       modelo.setAttribute("scale", "1 1 1");
       modelo.setAttribute("position", "0 0 0");
       modelo.setAttribute("visible", "true");
 
+      // Depuración
       modelo.addEventListener("model-loaded", () => {
-        console.log("Modelo cargado correctamente.");
+        console.log("✅ Modelo cargado correctamente.");
+        document.getElementById("alerta").style.display = "none";
       });
 
       modelo.addEventListener("model-error", (e) => {
-        console.error("Error al cargar modelo:", e);
+        console.error("❌ Error al cargar modelo:", e);
+        document.getElementById("alerta").style.display = "block";
       });
 
       contenedor.appendChild(modelo);
     }
   </script>
+
 </body>
 </html>
