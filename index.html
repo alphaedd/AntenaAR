@@ -36,26 +36,6 @@
       max-width: 700px;
       margin: auto;
     }
-    .graficas {
-      padding: 20px 10px;
-    }
-    .grafica-item {
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-      padding: 10px;
-    }
-    .grafica-item h3 {
-      margin: 0 0 10px 0;
-      font-size: 16px;
-      text-align: center;
-    }
-    .grafica-item img {
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
     .visor-camara {
       height: 600px;
       position: relative;
@@ -129,23 +109,9 @@
     </select><br>
 
     <button onclick="mostrarModelo()">Mostrar Patrón</button>
+    <button onclick="abrirGraficas()">Ver Gráficas</button>
     <div id="mensaje-error">No se pudo cargar el modelo. Verifica que el archivo .glb exista.</div>
     <div id="cargando-modelo">Cargando modelo 3D...</div>
-  </div>
-
-  <div class="modulo graficas">
-    <div class="grafica-item">
-      <h3>Plano XY (Azimuth)</h3>
-      <img id="imgXY" src="" alt="Plano XY (Azimuth)">
-    </div>
-    <div class="grafica-item">
-      <h3>Plano XZ (Plano E)</h3>
-      <img id="imgXZ" src="" alt="Plano XZ (Plano E)">
-    </div>
-    <div class="grafica-item">
-      <h3>Plano YZ (Plano H)</h3>
-      <img id="imgYZ" src="" alt="Plano YZ (Plano H)">
-    </div>
   </div>
 
   <div class="visor-camara">
@@ -162,15 +128,8 @@
       const tipo = document.getElementById("tipo").value;
       const frecuencia = document.getElementById("frecuencia").value;
       const rutaModelo = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
-      const rutaXY = `graficas/${tipo}_${frecuencia}MHz_XY.png`;
-      const rutaXZ = `graficas/${tipo}_${frecuencia}MHz_XZ.png`;
-      const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
 
       console.log("Intentando cargar modelo:", rutaModelo);
-
-      document.getElementById("imgXY").src = rutaXY;
-      document.getElementById("imgXZ").src = rutaXZ;
-      document.getElementById("imgYZ").src = rutaYZ;
 
       const cargando = document.getElementById("cargando-modelo");
       cargando.style.display = "block";
@@ -192,6 +151,13 @@
         cargando.style.display = "none";
       });
       container.appendChild(modelo);
+    }
+
+    function abrirGraficas() {
+      const tipo = document.getElementById("tipo").value;
+      const frecuencia = document.getElementById("frecuencia").value;
+      const url = `graficas/graficas_${tipo}_${frecuencia}MHz.html`;
+      window.open(url, '_blank');
     }
   </script>
 </body>
