@@ -1,43 +1,105 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Antenas AR</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
-    <style>
-      #btn { position: absolute; top: 20px; left: 20px; z-index: 5; background: white; padding: 10px; }
-    </style>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <button id="btn">Mostrar Patrón</button>
+<head>
+  <meta charset="UTF-8">
+  <title>Antenas AR Interactivo</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
+  <style>
+    .ui {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 8px;
+      z-index: 5;
+    }
+    select, button {
+      margin-top: 5px;
+      width: 100%;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
 
-    <a-scene embedded arjs>
-      <a-assets>
-        <a-asset-item id="modelo" src=""></a-asset-item>
-      </a-assets>
+  <div class="ui">
+    <label for="tipo">Tipo de Antena:</label>
+    <select id="tipo">
+      <option value="dipolo">Dipolo</option>
+      <option value="logaritmica">Logarítmica</option>
+      <option value="microstrip">Microstrip</option>
+      <option value="monopolo">Monopolo</option>
+      <option value="parabolica">Parabólica</option>
+      <option value="yagi">Yagi</option>
+    </select>
 
-      <a-marker preset="hiro">
-        <a-entity id="antena3D" gltf-model="#modelo" scale="1 1 1" visible="false"></a-entity>
-      </a-marker>
+    <label for="frecuencia">Frecuencia (MHz):</label>
+    <select id="frecuencia">
+<option value="200">200</option>
+<option value="400">400</option>
+<option value="600">600</option>
+<option value="800">800</option>
+<option value="1000">1000</option>
+<option value="1200">1200</option>
+<option value="1400">1400</option>
+<option value="1600">1600</option>
+<option value="1800">1800</option>
+<option value="2000">2000</option>
+<option value="2200">2200</option>
+<option value="2400">2400</option>
+<option value="2600">2600</option>
+<option value="2800">2800</option>
+<option value="3000">3000</option>
+<option value="3200">3200</option>
+<option value="3400">3400</option>
+<option value="3600">3600</option>
+<option value="3800">3800</option>
+<option value="4000">4000</option>
+<option value="4200">4200</option>
+<option value="4400">4400</option>
+<option value="4600">4600</option>
+<option value="4800">4800</option>
+<option value="5000">5000</option>
+<option value="5200">5200</option>
+<option value="5400">5400</option>
+<option value="5600">5600</option>
+<option value="5800">5800</option>
+<option value="6000">6000</option>
+    </select>
 
-      <a-entity camera></a-entity>
-    </a-scene>
+    <button id="btnMostrar">Mostrar Patrón</button>
+  </div>
 
-    <script>
-      function getParams() {
-        const url = new URL(window.location.href);
-        const tipo = url.searchParams.get("tipo") || "dipolo";
-        const freq = url.searchParams.get("frecuencia") || "900";
-        return { tipo, freq };
+  <a-scene embedded arjs>
+    <a-marker preset="hiro">
+      <!-- Modelo dinámico se insertará aquí -->
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    document.getElementById("btnMostrar").onclick = () => {
+      const tipo = document.getElementById("tipo").value;
+      const frecuencia = document.getElementById("frecuencia").value;
+      const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
+
+      const marcador = document.querySelector("a-marker");
+      let viejoModelo = document.querySelector("#modelo3d");
+      if (viejoModelo) {
+        marcador.removeChild(viejoModelo);
       }
 
-      const { tipo, freq } = getParams();
-      const modeloPath = `modelos/modelo_${tipo}_${freq}MHz.glb`;
-      document.querySelector('#modelo').setAttribute('src', modeloPath);
+      const nuevoModelo = document.createElement("a-entity");
+      nuevoModelo.setAttribute("id", "modelo3d");
+      nuevoModelo.setAttribute("gltf-model", ruta);
+      nuevoModelo.setAttribute("position", "0 0 0");
+      nuevoModelo.setAttribute("rotation", "0 0 0");
+      nuevoModelo.setAttribute("scale", "1 1 1");
 
-      document.getElementById("btn").onclick = () => {
-        document.querySelector("#antena3D").setAttribute("visible", true);
-      };
-    </script>
-  </body>
+      marcador.appendChild(nuevoModelo);
+    };
+  </script>
+</body>
 </html>
