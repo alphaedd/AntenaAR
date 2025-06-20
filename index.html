@@ -73,6 +73,13 @@
       margin-top: 10px;
       display: none;
     }
+    #cargando-modelo {
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -123,6 +130,7 @@
 
     <button onclick="mostrarModelo()">Mostrar Patrón</button>
     <div id="mensaje-error">No se pudo cargar el modelo. Verifica que el archivo .glb exista.</div>
+    <div id="cargando-modelo">Cargando modelo 3D...</div>
   </div>
 
   <div class="modulo graficas">
@@ -164,6 +172,9 @@
       document.getElementById("imgXZ").src = rutaXZ;
       document.getElementById("imgYZ").src = rutaYZ;
 
+      const cargando = document.getElementById("cargando-modelo");
+      cargando.style.display = "block";
+
       const container = document.getElementById("modeloContainer");
       container.innerHTML = "";
       const modelo = document.createElement("a-entity");
@@ -173,10 +184,12 @@
       modelo.addEventListener("model-error", (e) => {
         console.error("Error al cargar el modelo:", e);
         document.getElementById("mensaje-error").style.display = "block";
+        cargando.style.display = "none";
       });
       modelo.addEventListener("model-loaded", () => {
         console.log("Modelo cargado correctamente.");
         document.getElementById("mensaje-error").style.display = "none";
+        cargando.style.display = "none";
       });
       container.appendChild(modelo);
     }
