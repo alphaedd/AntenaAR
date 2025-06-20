@@ -49,6 +49,10 @@
     </div>
 
     <a-scene embedded vr-mode-ui="false" arjs="sourceType: webcam;">
+      <!-- Iluminación para visibilidad del modelo -->
+      <a-entity light="type: ambient; color: #ffffff; intensity: 1"></a-entity>
+      <a-entity light="type: directional; color: #ffffff; intensity: 0.5" position="0 2 1"></a-entity>
+
       <!-- Marcador HIRO -->
       <a-marker preset="hiro">
         <a-entity id="modeloContainer" rotar-modelo></a-entity>
