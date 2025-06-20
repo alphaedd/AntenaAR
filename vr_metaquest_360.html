@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <title>Antenas AR - Meta Quest 2</title>
   <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-  <!-- ✅ Versión compatible de aframe-extras -->
-  <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.0.1/dist/aframe-extras.min.js"></script>
   <style>
     body { margin: 0; overflow: hidden; font-family: sans-serif; }
     #menu {
@@ -37,41 +35,38 @@
       <option value="yagi">Yagi</option>
     </select><br>
     <label for="frecuencia">Frecuencia (MHz):</label>
-    <select id="frecuencia">
-      <!-- Todas las frecuencias de 200 a 6000 MHz en pasos de 200 -->
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const frecSelect = document.getElementById("frecuencia");
-          for (let i = 200; i <= 6000; i += 200) {
-            const option = document.createElement("option");
-            option.value = i;
-            option.textContent = i;
-            frecSelect.appendChild(option);
-          }
-        });
-      </script>
-    </select><br>
+    <select id="frecuencia"></select><br>
     <button onclick="mostrarModelo()">Mostrar Modelo</button>
   </div>
 
   <a-scene renderer="alpha: true" embedded>
     <a-assets></a-assets>
 
-    <!-- Modelo 3D -->
+    <!-- Contenedor del modelo 3D -->
     <a-entity id="modeloContainer"></a-entity>
 
-    <!-- Gráficas alrededor -->
+    <!-- Gráficas como planos flotantes -->
     <a-image id="graficaXY" position="-1 2 -2" width="1.2" height="1.2" src=""></a-image>
     <a-image id="graficaXZ" position="0 2 -2" width="1.2" height="1.2" src=""></a-image>
     <a-image id="graficaYZ" position="1 2 -2" width="1.2" height="1.2" src=""></a-image>
 
-    <!-- Cámara y control -->
+    <!-- Cámara y movimiento -->
     <a-entity id="cameraRig" position="0 1.6 0">
       <a-entity camera look-controls wasd-controls></a-entity>
     </a-entity>
   </a-scene>
 
   <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const select = document.getElementById("frecuencia");
+      for (let i = 200; i <= 6000; i += 200) {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = i;
+        select.appendChild(opt);
+      }
+    });
+
     function mostrarModelo() {
       const tipo = document.getElementById("tipo").value;
       const frecuencia = document.getElementById("frecuencia").value;
@@ -81,17 +76,16 @@
       const rutaXZ = `graficas/${tipo}_${frecuencia}MHz_XZ.png`;
       const rutaYZ = `graficas/${tipo}_${frecuencia}MHz_YZ.png`;
 
-      const container = document.getElementById("modeloContainer");
-      container.innerHTML = "";
+      const contenedor = document.getElementById("modeloContainer");
+      contenedor.innerHTML = "";
 
       const modelo = document.createElement("a-entity");
       modelo.setAttribute("gltf-model", rutaModelo);
       modelo.setAttribute("position", "0 1.5 -3");
       modelo.setAttribute("scale", "1 1 1");
-      modelo.setAttribute("id", "modeloInteractivo");
       modelo.setAttribute("rotation", "0 0 0");
 
-      container.appendChild(modelo);
+      contenedor.appendChild(modelo);
 
       document.querySelector("#graficaXY").setAttribute("src", rutaXY);
       document.querySelector("#graficaXZ").setAttribute("src", rutaXZ);
