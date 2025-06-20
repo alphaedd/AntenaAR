@@ -1,56 +1,101 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>AR Antena</title>
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
-    <style>
-      body { margin: 0; overflow: hidden; }
-      #ui {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        background: white;
-        padding: 10px;
-        z-index: 1000;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="ui">
-      <select id="tipo">
-        <option value="dipolo">Dipolo</option>
-        <option value="logaritmica">Logarítmica</option>
-      </select>
-      <select id="frecuencia">
-        <option value="200">200</option>
-        <option value="400">400</option>
-      </select>
-      <button onclick="mostrarModelo()">Cargar Modelo</button>
-    </div>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Visor AR - Antenas</title>
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    #menu {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      z-index: 10;
+      border-radius: 8px;
+    }
+    select, button {
+      margin: 5px 0;
+      width: 100%;
+      padding: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <label for="tipo">Tipo de Antena:</label>
+    <select id="tipo">
+      <option value="dipolo">Dipolo</option>
+      <option value="logaritmica">Logarítmica</option>
+      <option value="microstrip">Microstrip</option>
+      <option value="monopolo">Monopolo</option>
+      <option value="parabolica">Parabólica</option>
+      <option value="yagi">Yagi</option>
+    </select>
 
-    <a-scene embedded arjs>
-      <a-assets>
-        <a-asset-item id="modelo" src=""></a-asset-item>
-      </a-assets>
+    <label for="frecuencia">Frecuencia (MHz):</label>
+    <select id="frecuencia">
+      <option value="200">200</option>
+      <option value="400">400</option>
+      <option value="600">600</option>
+      <option value="800">800</option>
+      <option value="1000">1000</option>
+      <option value="1200">1200</option>
+      <option value="1400">1400</option>
+      <option value="1600">1600</option>
+      <option value="1800">1800</option>
+      <option value="2000">2000</option>
+      <option value="2200">2200</option>
+      <option value="2400">2400</option>
+      <option value="2600">2600</option>
+      <option value="2800">2800</option>
+      <option value="3000">3000</option>
+    </select>
 
-      <a-marker preset="hiro">
-        <a-entity id="antena3D" gltf-model="#modelo" scale="1 1 1" position="0 0 0" visible="false"></a-entity>
-      </a-marker>
-      <a-entity camera></a-entity>
-    </a-scene>
+    <button onclick="mostrarModelo()">Mostrar Patrón</button>
+  </div>
 
-    <script>
-      function mostrarModelo() {
-        const tipo = document.getElementById("tipo").value;
-        const frecuencia = document.getElementById("frecuencia").value;
-        const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
+  <a-scene embedded arjs>
+    <a-marker preset="hiro">
+      <a-entity id="modeloContainer"></a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
 
-        console.log("Cargando:", ruta);
-        document.querySelector("#modelo").setAttribute("src", ruta);
-        document.querySelector("#antena3D").setAttribute("visible", "true");
-      }
-    </script>
-  </body>
+  <script>
+    function mostrarModelo() {
+      const tipo = document.getElementById("tipo").value;
+      const frecuencia = document.getElementById("frecuencia").value;
+      const ruta = `modelos/modelo_${tipo}_${frecuencia}MHz.glb`;
+
+      console.log("Intentando cargar:", ruta);
+
+      const contenedor = document.getElementById("modeloContainer");
+      contenedor.innerHTML = "";
+
+      const modelo = document.createElement("a-entity");
+      modelo.setAttribute("gltf-model", ruta);
+      modelo.setAttribute("scale", "1 1 1");
+      modelo.setAttribute("position", "0 0 0");
+      modelo.setAttribute("visible", "true");
+
+      modelo.addEventListener("model-loaded", () => {
+        console.log("Modelo cargado correctamente.");
+      });
+
+      modelo.addEventListener("model-error", (e) => {
+        console.error("Error al cargar modelo:", e);
+      });
+
+      contenedor.appendChild(modelo);
+    }
+  </script>
+</body>
 </html>
